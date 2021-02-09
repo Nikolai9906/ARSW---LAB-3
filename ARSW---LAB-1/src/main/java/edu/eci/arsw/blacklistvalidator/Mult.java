@@ -15,6 +15,7 @@ public class Mult extends Thread{
     private LinkedList<Integer> blackListOcurrences;
     private int currentServer;
     private int analysisNumber;
+    private boolean pausa=false;
 
     public Mult(HostBlacklistsDataSourceFacade skds, AtomicInteger ocurrencesCount, int BLACK_LIST_ALARM_COUNT, AtomicInteger checkedListsCount, String ipaddress, LinkedList<Integer> blackListOcurrences, int currentServer, int analysisNumber) {
         this.skds= skds;
@@ -36,7 +37,20 @@ public class Mult extends Thread{
                 blackListOcurrences.add(i);
                 ocurrencesCount.getAndIncrement();
             }
+            synchronized (this){
+                if (pausa){
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
+    }
+    public void pausar(){
+        pausa=true;
+
     }
 
 }

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class HostBlackListsValidator {
 
     private static final int BLACK_LIST_ALARM_COUNT=5;
+    private boolean band=true;
     
     /**
      * Check the given host's IP address in all the available black lists,
@@ -32,7 +33,7 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(String ipaddress, int n){
+    public List<Integer> checkHost(String ipaddress, int n) throws InterruptedException {
         
         LinkedList<Integer> blackListOcurrences=new LinkedList<>();
         AtomicInteger ocurrencesCount= new AtomicInteger(0);
@@ -56,24 +57,23 @@ public class HostBlackListsValidator {
         }
         for (int i=0;i<n;i++) {
             hilo.get(i).start();
+
         }
         for (int i=0;i<n;i++) {
-            try {
-                hilo.get(i).join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+           hilo.get(i).join();
+        }
+        while(band){
+            if (ocurrencesCount.get()>=BLACK_LIST_ALARM_COUNT||checkedListsCount.get()<=skds.getRegisteredServersCount()){
+                skds.reportAsNotTrustworthy(ipaddress);
+                for(Mult e:hilo){
+                    e.pausar();
+                    band=false;}
             }
+
         }
-
-
-
-        if (ocurrencesCount.get()>=BLACK_LIST_ALARM_COUNT){
-            skds.reportAsNotTrustworthy(ipaddress);
-        }
-        else{
+        if(checkedListsCount.get()== skds.getRegisteredServersCount()){
             skds.reportAsTrustworthy(ipaddress);
-        }                
-        
+        }
         LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
         
         return blackListOcurrences;

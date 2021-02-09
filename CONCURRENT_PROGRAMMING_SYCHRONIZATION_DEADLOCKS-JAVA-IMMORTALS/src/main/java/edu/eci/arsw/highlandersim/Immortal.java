@@ -6,7 +6,7 @@ import java.util.Random;
 public class Immortal extends Thread {
 
     private ImmortalUpdateReportCallback updateCallback=null;
-    
+    private boolean pausa;
     private int health;
     
     private int defaultDamageValue;
@@ -50,8 +50,21 @@ public class Immortal extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            while(pausa){
+                synchronized (immortalsPopulation){
+                    for(Immortal o:immortalsPopulation){
+                        try {
+                            immortalsPopulation.wait();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
 
         }
+
 
     }
 
@@ -65,6 +78,26 @@ public class Immortal extends Thread {
             updateCallback.processReport(this + " says:" + i2 + " is already dead!\n");
         }
 
+    }
+    public void pausar(){
+        pausa=true;
+    }
+    public void resum(){
+        pausa=false;
+        synchronized (immortalsPopulation){
+            for(Immortal o:immortalsPopulation){
+                immortalsPopulation.notifyAll();
+            }
+
+        }
+    }
+    public void detener(){
+        synchronized (immortalsPopulation){
+            for(Immortal o:immortalsPopulation){
+                o.stop();
+            }
+
+        }
     }
 
     public void changeHealth(int v) {
