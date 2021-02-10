@@ -2,12 +2,14 @@ package edu.eci.arsw.highlandersim;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Immortal extends Thread {
 
     private ImmortalUpdateReportCallback updateCallback=null;
     private boolean pausa;
     private int health;
+
     
     private int defaultDamageValue;
 
@@ -16,6 +18,7 @@ public class Immortal extends Thread {
     private final String name;
 
     private final Random r = new Random(System.currentTimeMillis());
+    private AtomicInteger aInt = new AtomicInteger();
 
 
     public Immortal(String name, List<Immortal> immortalsPopulation, int health, int defaultDamageValue, ImmortalUpdateReportCallback ucb) {
@@ -24,6 +27,7 @@ public class Immortal extends Thread {
         this.name = name;
         this.immortalsPopulation = immortalsPopulation;
         this.health = health;
+        this.aInt.getAndAdd(health);
         this.defaultDamageValue=defaultDamageValue;
     }
 
@@ -46,7 +50,7 @@ public class Immortal extends Thread {
             this.fight(im);
 
             try {
-                Thread.sleep(1);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -71,7 +75,7 @@ public class Immortal extends Thread {
     public void fight(Immortal i2) {
 
         if (i2.getHealth() > 0) {
-            i2.changeHealth(i2.getHealth() - defaultDamageValue);
+            i2.changeHealth(defaultDamageValue);
             this.health += defaultDamageValue;
             updateCallback.processReport("Fight: " + this + " vs " + i2+"\n");
         } else {
@@ -101,11 +105,13 @@ public class Immortal extends Thread {
     }
 
     public void changeHealth(int v) {
-        health = v;
+        health -= v;
+        for (int i=0;i<10;i++){aInt.decrementAndGet();}
+
     }
 
     public int getHealth() {
-        return health;
+        return Integer.parseInt(aInt.toString());
     }
 
     @Override
