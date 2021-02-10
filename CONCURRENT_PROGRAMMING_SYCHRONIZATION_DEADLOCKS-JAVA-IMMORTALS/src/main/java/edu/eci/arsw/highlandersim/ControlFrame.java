@@ -75,12 +75,10 @@ public class ControlFrame extends JFrame {
                 if (immortals != null) {
                     for (Immortal im : immortals) {
                         im.start();
-
                     }
+
                 }
-
                 btnStart.setEnabled(false);
-
             }
         });
         toolBar.add(btnStart);
@@ -140,7 +138,17 @@ public class ControlFrame extends JFrame {
                     im.detener();
 
                 }
-                statisticsLabel.setText("DETENIDO");
+                btnStart.setEnabled(false);
+                btnResume.setEnabled(false);
+                btnPauseAndCheck.setEnabled(false);
+
+                int sum = 0;
+                for (Immortal im : immortals) {
+
+                    sum += im.getHealth();
+                }
+
+                statisticsLabel.setText("<html>"+immortals.toString()+"<br>Health sum:"+ sum+"<br>DETENIDO");
                 /**
                  * IMPLEMENTADO BOTON STOP DESDE 0
                  */
