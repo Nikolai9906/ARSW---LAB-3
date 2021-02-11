@@ -1,0 +1,1 @@
+No seria posible generar una condicion de carrera ya que se agrego una condicion para verificar cuando el inmortal se quede sin vida y los demas tengan que verlo sin vida, esto con la ayuda de que cuando la vida sea igual o menor a 0 se remueve de la lista de inmortales
