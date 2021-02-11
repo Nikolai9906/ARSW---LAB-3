@@ -45,11 +45,11 @@ public class Immortal extends Thread {
             }
 
             im = immortalsPopulation.get(nextFighterIndex);
-            if(im.getHealth()>0){this.fight(im);}
+            this.fight(im);
 
 
             try {
-                Thread.sleep(200);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -68,7 +68,7 @@ public class Immortal extends Thread {
     }
     public void matar(Immortal muerto){
         immortalsPopulation.remove(muerto);
-        System.out.println("matan");
+        //System.out.println("matan");
 
     }
 
@@ -82,6 +82,7 @@ public class Immortal extends Thread {
             } else{
                 if (i2.getHealth() <= 0) {
                     immortalsPopulation.remove(i2);
+                    i2.f();
                     for(Immortal u:immortalsPopulation){u.matar(i2);}
                     updateCallback.processReport(this + " says:" + i2 + " is already dead!\n");
                 }
@@ -94,11 +95,10 @@ public class Immortal extends Thread {
         pausa=true;
     }
     public void resum(){
-        pausa=false;
+
         synchronized (immortalsPopulation){
-            for(Immortal o:immortalsPopulation){
-                immortalsPopulation.notifyAll();
-            }
+            pausa=false;
+            immortalsPopulation.notifyAll();
 
         }
     }
@@ -114,7 +114,6 @@ public class Immortal extends Thread {
 
     public synchronized void changeHealth(int v) {
         aInt=new AtomicInteger(v);
-
     }
 
     public synchronized int getHealth() {

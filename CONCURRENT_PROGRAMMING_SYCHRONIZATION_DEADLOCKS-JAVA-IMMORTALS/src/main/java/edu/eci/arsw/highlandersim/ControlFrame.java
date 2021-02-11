@@ -112,9 +112,6 @@ public class ControlFrame extends JFrame {
                     im.resum();
 
                 }
-                /**
-                 * IMPLEMENTAR
-                 */
 
             }
         });
